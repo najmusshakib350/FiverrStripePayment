@@ -16,6 +16,16 @@ app.set("views", path.join(__dirname, "views"));
 
 app.use(express.static("public"));
 
+app.post(
+  "/webhook-checkout",
+  app.use(express.raw({ type: "application/json" })),
+  async function (req, res) {
+    console.log("Hello checkout");
+  }
+);
+
+app.use(express.json());
+
 const YOUR_DOMAIN = "https://fiverrstripe.herokuapp.com/";
 
 //Frontend part code implementation
@@ -28,11 +38,9 @@ app.post("/create-checkout-session", async function (req, res) {
   console.log("Create checkout session");
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ["card"],
-    // success_url:`${req.protocol}://${req.get('host')}/my-tours/?tour=${ req.params.tourId}&user=${req.user.id}&price=${tour.price}`,
     success_url: `${YOUR_DOMAIN}/success.html`,
     cancel_url: `${YOUR_DOMAIN}/cancel.html`,
     customer_email: "najmusshakib1997@gmail.com",
-    // client_reference_id: req.params.tourId,
     line_items: [
       {
         name: `Your product name that user want to purchase`,
