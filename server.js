@@ -1,8 +1,12 @@
 const path = require("path");
 
-const stripe = require("stripe")(
-  "sk_test_51JYOejEYUdpXhXaQfBqnWq0lMdDe9kWMtA8GCGL9fmqY0Bxle4xy7u6E4YeylVXAvKCUtQnxPNjmYuQPLZK4YbNk00Yi5UHDXl"
-);
+//config file
+const dotenv = require("dotenv");
+dotenv.config({
+  path: "./config.env",
+});
+
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const express = require("express");
 const app = express();
 
@@ -12,7 +16,7 @@ app.set("views", path.join(__dirname, "views"));
 
 app.use(express.static("public"));
 
-const YOUR_DOMAIN = "http://localhost:4242";
+const YOUR_DOMAIN = "https://fiverrstripe.herokuapp.com/";
 
 //Frontend part code implementation
 
@@ -46,4 +50,5 @@ app.post("/create-checkout-session", async function (req, res) {
   });
 });
 
-app.listen(4242, () => console.log("Running on port 4242"));
+let port = process.env.PORT;
+app.listen(port, () => console.log("Running on port 4242"));
