@@ -19,14 +19,29 @@ app.use(express.static("public"));
 app.post(
   "/webhook-checkout",
   app.use(express.raw({ type: "application/json" })),
-  async function (req, res) {
-    console.log("Hello checkout");
+  async function (request, response) {
+    const sig = request.headers["stripe-signature"];
+
+    let event;
+
+    try {
+      event = stripe.webhooks.constructEvent(
+        request.body,
+        sig,
+        process.env.WEB_SECRET_KEY
+      );
+    } catch (err) {
+      response.status(400).send(`Webhook Error: ${err.message}`);
+      return;
+    }
+    // Return a 200 response to acknowledge receipt of the event
+    response.send();
   }
 );
 
 app.use(express.json());
 
-const YOUR_DOMAIN = "https://fiverrstripe.herokuapp.com/";
+const YOUR_DOMAIN = "https://fiverrstripe.herokuapp.com";
 
 //Frontend part code implementation
 
@@ -38,8 +53,8 @@ app.post("/create-checkout-session", async function (req, res) {
   console.log("Create checkout session");
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ["card"],
-    success_url: `${YOUR_DOMAIN}/success.html`,
-    cancel_url: `${YOUR_DOMAIN}/cancel.html`,
+    success_url: `${YOUR_DOMAIN}/success.ejs`,
+    cancel_url: `${YOUR_DOMAIN}/cancel.ejs`,
     customer_email: "najmusshakib1997@gmail.com",
     line_items: [
       {
