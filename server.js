@@ -48,12 +48,16 @@ const YOUR_DOMAIN = "https://fiverrstripe.herokuapp.com";
 app.get("/", async function (req, res) {
   res.status(200).render("checkout");
 });
+
+app.get("/success", async function (req, res) {
+  res.status(200).render("success");
+});
 app.post("/create-checkout-session", async function (req, res) {
   console.log("Create checkout session");
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ["card"],
-    success_url: `${YOUR_DOMAIN}/success.ejs`,
-    cancel_url: `${YOUR_DOMAIN}/cancel.ejs`,
+    success_url: `${YOUR_DOMAIN}/success`,
+    cancel_url: `${YOUR_DOMAIN}/cancel`,
     customer_email: "najmusshakib1997@gmail.com",
     line_items: [
       {
