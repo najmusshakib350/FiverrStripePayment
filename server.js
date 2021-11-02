@@ -15,13 +15,13 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
 app.use(express.static("public"));
-
 app.post(
   "/webhook-checkout",
   app.use(express.raw({ type: "application/json" })),
   async function (request, response) {
     const sig = request.headers["stripe-signature"];
-
+    console.log("This is sig");
+    console.log(sig);
     let event;
 
     try {
@@ -30,6 +30,10 @@ app.post(
         sig,
         process.env.WEB_SECRET_KEY
       );
+      console.log("This is request.body object");
+      console.log(request.body);
+      console.log("This is event object");
+      console.log(event);
     } catch (err) {
       response.status(400).send(`Webhook Error: ${err.message}`);
       return;
@@ -38,17 +42,12 @@ app.post(
     response.send();
   }
 );
-
 app.use(express.json());
-
 const YOUR_DOMAIN = "https://fiverrstripe.herokuapp.com";
-
 //Frontend part code implementation
-
 app.get("/", async function (req, res) {
   res.status(200).render("checkout");
 });
-
 app.post("/create-checkout-session", async function (req, res) {
   console.log("Create checkout session");
   const session = await stripe.checkout.sessions.create({
@@ -72,6 +71,5 @@ app.post("/create-checkout-session", async function (req, res) {
     session,
   });
 });
-
 let port = process.env.PORT;
 app.listen(port, () => console.log("Running on port 4242"));
